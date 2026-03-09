@@ -138,12 +138,10 @@ HTML_PAGE = """
     #sendBtn:hover{transform:scale(1.1);background:#ffd700}
     #sendBtn:disabled{opacity:.4;cursor:not-allowed}
 
+    #sidebar{position:absolute;height:100%;z-index:100;width:240px}
+    #sidebar.hidden{transform:translateX(-100%)}
     #overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:99}
     #overlay.show{display:block}
-    @media(max-width:600px){
-      #sidebar{position:absolute;height:100%;z-index:100;width:240px}
-      #sidebar.hidden{transform:translateX(-100%)}
-    }
   </style>
 </head>
 <body>
@@ -361,7 +359,8 @@ HTML_PAGE = """
   }
 
   // ── Init ─────────────────────────────────────────────────
-  if (window.innerWidth<=600) document.getElementById('sidebar').classList.add('hidden');
+  // Selalu sembunyikan sidebar saat pertama load di semua ukuran layar
+  document.getElementById('sidebar').classList.add('hidden');
   renderSidebar(); renderChat();
 
   inputEl.addEventListener('keydown', e=>{
