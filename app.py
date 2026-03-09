@@ -12,7 +12,8 @@ app = Flask(__name__)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "ISI_API_KEY_KAMU_DISINI")
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-pro-vision")
+
 HTML_PAGE = """
 <!DOCTYPE html>
 <html lang="id">
@@ -374,6 +375,13 @@ HTML_PAGE = """
 </body>
 </html>
 """
+
+@app.route("/models")
+def list_models():
+    models_list = []
+    for m in genai.list_models():
+        models_list.append(m.name)
+    return jsonify(models_list)
 
 @app.route("/")
 def index():
