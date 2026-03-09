@@ -62,7 +62,13 @@ HTML_PAGE = """
     #overlay.show{display:block}
 
     /* ── Main ── */
-    #main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;height:100vh;}
+    #main{
+      flex:1;display:flex;flex-direction:column;
+      min-width:0;min-height:0;
+      position:relative;
+      height:100vh;
+      max-height:100vh;
+    }
     header{
       background:#1a1a1a;border-bottom:2px solid #f5c518;
       padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0
@@ -82,7 +88,7 @@ HTML_PAGE = """
     header small{color:#aaa;font-size:0.7rem;display:block}
 
     /* ── Chat ── */
-    #chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0;}
+    #chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow-x:hidden;}
     #chat::-webkit-scrollbar{width:4px}
     #chat::-webkit-scrollbar-thumb{background:#f5c518;border-radius:4px}
     .bubble{
@@ -118,7 +124,12 @@ HTML_PAGE = """
     /* ── Input ── */
     #inputBar{
       background:#1a1a1a;border-top:2px solid #f5c518;
-      padding:10px 12px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0
+      padding:10px 12px;display:flex;gap:8px;align-items:flex-end;
+      flex-shrink:0;
+      position:sticky;
+      bottom:0;
+      width:100%;
+      z-index:10;
     }
     #photoBtn{
       background:none;border:1px solid #f5c518;color:#f5c518;
