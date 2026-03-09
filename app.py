@@ -24,6 +24,7 @@ HTML_PAGE = """
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:#111;color:#f5c518;font-family:'Segoe UI',sans-serif;display:flex;height:100vh;overflow:hidden}
+    html,body{height:100%;}
 
     /* ── Sidebar ── */
     #sidebar{
