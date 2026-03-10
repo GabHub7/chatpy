@@ -1,5 +1,5 @@
 # ============================================================
-#  ChatPy — Flask + Gemini 2.0 Flash + Sidebar + Kirim Foto
+#  ChatPy — Flask + Gemini 2.5 Flash + Sidebar + Kirim Foto
 #  Jalankan:  python app.py
 #  Buka:      http://localhost:5000
 # ============================================================
@@ -62,13 +62,7 @@ HTML_PAGE = """
     #overlay.show{display:block}
 
     /* ── Main ── */
-    #main{
-      flex:1;display:flex;flex-direction:column;
-      min-width:0;min-height:0;
-      position:relative;
-      height:100vh;
-      max-height:100vh;
-    }
+    #main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;height:100vh;max-height:100vh;}
     header{
       background:#1a1a1a;border-bottom:2px solid #f5c518;
       padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0
@@ -101,7 +95,6 @@ HTML_PAGE = """
     .bubble.ai{background:#1e1e1e;color:#f0f0f0;border:1px solid #333;align-self:flex-start;border-bottom-left-radius:4px}
     .bubble.ai .sender{color:#f5c518;font-weight:700;margin-bottom:4px;font-size:0.78rem}
     .bubble .time{font-size:0.67rem;opacity:.45;margin-top:5px;text-align:right}
-    .bubble img{max-width:100%;border-radius:10px;margin-bottom:6px;display:block}
     .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:.3}
     .empty-state .big{font-size:2.5rem}
     .empty-state p{font-size:0.85rem;text-align:center}
@@ -125,11 +118,7 @@ HTML_PAGE = """
     #inputBar{
       background:#1a1a1a;border-top:2px solid #f5c518;
       padding:10px 12px;display:flex;gap:8px;align-items:flex-end;
-      flex-shrink:0;
-      position:sticky;
-      bottom:0;
-      width:100%;
-      z-index:10;
+      flex-shrink:0;position:sticky;bottom:0;width:100%;z-index:10;
     }
     #photoBtn{
       background:none;border:1px solid #f5c518;color:#f5c518;
@@ -172,7 +161,7 @@ HTML_PAGE = """
     <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
     <div class="logo">
       <span class="icon">C</span>
-      <div><h1>ChatPy</h1><small>Powered by Gemini 2.0</small></div>
+      <div><h1>ChatPy</h1><small>Powered by Gemini 2.5</small></div>
     </div>
   </header>
 
@@ -268,7 +257,9 @@ HTML_PAGE = """
     const w=document.createElement('div');
     w.className='bubble '+(role==='user'?'user':'ai');
     let inner='';
-    if(imageUrl)inner+=`<img src="${imageUrl}" alt="gambar"/>`;
+    if(imageUrl){
+      inner+=`<img src="${imageUrl}" alt="gambar" style="max-width:100%;border-radius:10px;margin-bottom:6px;display:block;" onerror="this.style.display='none'"/>`;
+    }
     if(role==='ai'){
       inner=`<div class="sender">⚡ ChatPy</div>${inner}${esc(text)}<div class="time">${time}</div>`;
     }else{
@@ -287,14 +278,23 @@ HTML_PAGE = """
 
   function handleImage(e){
     const file=e.target.files[0];if(!file)return;
+    if(!file.type.startsWith('image/')){alert('File harus berupa gambar!');return;}
     const reader=new FileReader();
     reader.onload=ev=>{
       const dataUrl=ev.target.result;
-      pendingImg={base64:dataUrl.split(',')[1],mimeType:file.type,dataUrl};
-      document.getElementById('imgPreview').src=dataUrl;
-      document.getElementById('imgPreviewBar').classList.add('show');
+      if(!dataUrl||!dataUrl.includes('base64')){alert('Gagal membaca gambar, coba lagi.');return;}
+      const base64=dataUrl.split(',')[1];
+      const mimeType=file.type;
+      pendingImg={base64,mimeType,dataUrl};
+      const preview=document.getElementById('imgPreview');
+      const bar=document.getElementById('imgPreviewBar');
+      preview.onload=()=>{bar.classList.add('show');};
+      preview.onerror=()=>{alert('Gagal menampilkan preview.');};
+      preview.src=dataUrl;
     };
-    reader.readAsDataURL(file);e.target.value='';
+    reader.onerror=()=>{alert('Gagal membaca file.');};
+    reader.readAsDataURL(file);
+    e.target.value='';
   }
 
   function removeImage(){
@@ -346,10 +346,6 @@ HTML_PAGE = """
 </body>
 </html>
 """
-
-@app.route("/models")
-def list_models():
-    return jsonify([m.name for m in genai.list_models()])
 
 @app.route("/")
 def index():
